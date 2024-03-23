@@ -1,0 +1,100 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: golang-k8s-argocd
+spec:
+  selector:
+    app: golang-k8s-argocd
+  ports:
+    - protocol: "TCP"
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: golang-k8s-argocd
+spec:
+  selector:
+    matchLabels:
+      app: golang-k8s-argocd
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: golang-k8s-argocd
+    spec:
+      containers:
+        - name: golang-k8s-argocd
+          image: thienhaole92/golang-k8s-argocd:v1
+          imagePullPolicy: Always
+          env:
+            - name: LOG_MODE
+              valueFrom:
+                configMapKeyRef:
+                  key: LOG_MODE
+                  name: golang-k8s-argocd
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  key: LOG_LEVEL
+                  name: golang-k8s-argocd
+            - name: REST_SERVER_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: REST_SERVER_HOST
+                  name: golang-k8s-argocd
+            - name: REST_SERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: REST_SERVER_PORT
+                  name: golang-k8s-argocd
+            - name: REST_SERVER_READ_TIMEOUT
+              valueFrom:
+                configMapKeyRef:
+                  key: REST_SERVER_READ_TIMEOUT
+                  name: golang-k8s-argocd
+            - name: REST_SERVER_WRITE_TIMEOUT
+              valueFrom:
+                configMapKeyRef:
+                  key: REST_SERVER_WRITE_TIMEOUT
+                  name: golang-k8s-argocd
+            - name: MONITOR_SERVER_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: MONITOR_SERVER_HOST
+                  name: golang-k8s-argocd
+            - name: MONITOR_SERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: MONITOR_SERVER_PORT
+                  name: golang-k8s-argocd
+            - name: MONITOR_SERVER_READ_TIMEOUT
+              valueFrom:
+                configMapKeyRef:
+                  key: MONITOR_SERVER_READ_TIMEOUT
+                  name: golang-k8s-argocd
+            - name: MONITOR_SERVER_WRITE_TIMEOUT
+              valueFrom:
+                configMapKeyRef:
+                  key: MONITOR_SERVER_WRITE_TIMEOUT
+                  name: golang-k8s-argocd
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: golang-k8s-argocd
+data:
+  LOG_MODE: development
+  LOG_LEVEL: DEBUG
+  REST_SERVER_HOST: 0.0.0.0
+  REST_SERVER_PORT: 8080
+  REST_SERVER_READ_TIMEOUT: 30s
+  REST_SERVER_WRITE_TIMEOUT: 30s
+  MONITOR_SERVER_HOST: 0.0.0.0
+  MONITOR_SERVER_PORT: 8081
+  MONITOR_SERVER_READ_TIMEOUT: 30s
+  MONITOR_SERVER_WRITE_TIMEOUT: 30s
